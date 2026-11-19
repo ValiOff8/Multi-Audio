@@ -1,0 +1,11 @@
+/bin/
+/obj/
+/dist/
+.vs/
+.idea/
+*.user
+*.suo
+settings.json
+settings.json.tmp
+Thumbs.db
+Desktop.ini
