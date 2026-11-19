@@ -2,13 +2,21 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net10.0-windows</TargetFramework>
-    <UseWindowsForms>true</UseWindowsForms>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <Product>Multi-Audio</Product>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="NAudio.Wasapi" Version="2.2.1" />
+    <PackageReference Include="Photino.NET" Version="4.0.16" />
+    <EmbeddedResource Include="Frontend/index.html" LogicalName="MultiAudio.Frontend" />
     <EmbeddedResource Include="THIRD-PARTY-NOTICES.txt" />
   </ItemGroup>
+  <Target Name="EmbedRuntimeNotices" BeforeTargets="AssignTargetPaths" DependsOnTargets="ResolveFrameworkReferences" Condition="'$(SelfContained)' == 'true'">
+    <ItemGroup>
+      <_DotNetRuntimePack Include="@(ResolvedRuntimePack)" Condition="'%(ResolvedRuntimePack.FrameworkName)' == 'Microsoft.NETCore.App'" />
+      <EmbeddedResource Include="@(_DotNetRuntimePack->'%(PackageDirectory)/LICENSE.TXT')" LogicalName="MultiAudio.DotNetLicense" />
+      <EmbeddedResource Include="@(_DotNetRuntimePack->'%(PackageDirectory)/THIRD-PARTY-NOTICES.TXT')" LogicalName="MultiAudio.DotNetNotices" />
+    </ItemGroup>
+  </Target>
 </Project>

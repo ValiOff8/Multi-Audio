@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; base-uri 'none'; form-action 'none'">
+<title>Multi-Audio</title>
+<style>
+    :root {
+        color-scheme: dark;
+        font: 15px/1.45 system-ui, sans-serif;
+        color: #eef4f7;
+        background: #10171f;
+        accent-color: #79dbc5;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    body { margin: 0; }
+    main { max-width: 34rem; margin: auto; padding: 1.25rem 1.5rem; }
+    h1 { margin: 0 0 0.9rem; font-size: 1.55rem; letter-spacing: -0.035em; }
+    .controls {
+        display: grid;
+        gap: 0.7rem;
+        background: #18232e;
+        border: 1px solid #2b3a48;
+        border-radius: 12px;
+        padding: 1rem;
+    }
+    .field { display: grid; gap: 0.3rem; min-width: 0; }
+    label { font-size: 0.9rem; font-weight: 600; }
+    select, button {
+        min-height: 2.4rem;
+        border: 1px solid #415265;
+        border-radius: 7px;
+        background: #111a23;
+        color: inherit;
+        font: inherit;
+    }
+    select { width: 100%; padding: 0 0.6rem; }
+    .volume { display: flex; align-items: baseline; justify-content: space-between; gap: 0.7rem; }
+    output { color: #b1c5d4; font-variant-numeric: tabular-nums; }
+    input[type=range] { width: 100%; margin: 0; }
+    .actions { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 0.45rem; }
+    button { padding: 0.35rem 0.8rem; cursor: pointer; font-weight: 600; }
+    #toggle { min-width: 6rem; border-color: #79dbc5; background: #79dbc5; color: #0b211d; }
+    button:disabled, select:disabled { opacity: 0.55; cursor: default; }
+    :focus-visible { outline: 2px solid #a5f3e1; outline-offset: 3px; }
+    .status { display: flex; align-items: baseline; gap: 0.6rem; margin: 0.85rem 0 0; color: #bdc9d5; }
+    .status::before {
+        content: "";
+        flex: 0 0 0.52rem;
+        height: 0.52rem;
+        border-radius: 50%;
+        background: #71849a;
+    }
+    .status[data-running="true"]::before { background: #79dbc5; }
+</style>
+</head>
+<body>
+<main>
+    <h1>Multi-Audio</h1>
+    <section class="controls" aria-label="Audio controls">
+        <div class="field">
+            <label for="input">Input</label>
+            <select id="input" disabled><option value="">Select an input</option></select>
+        </div>
+        <div class="field">
+            <label for="output">Output</label>
+            <select id="output" disabled><option value="">Select an output</option></select>
+        </div>
+        <div class="field">
+            <div class="volume">
+                <label for="volume">Line-in volume</label>
+                <output id="level" for="volume">50%</output>
+            </div>
+            <input type="range" id="volume" min="0" max="100" value="50" disabled>
+        </div>
+        <div class="actions">
+            <button id="toggle" type="button" disabled>Start</button>
+            <button id="refresh" type="button" disabled>Refresh devices</button>
+        </div>
+    </section>
+    <p id="status" class="status" role="status">Loading audio devices…</p>
+</main>
+<script>
+    const input = document.querySelector("#input");
+    const output = document.querySelector("#output");
+    const volume = document.querySelector("#volume");
+    const level = document.querySelector("#level");
+    const toggle = document.querySelector("#toggle");
+    const refresh = document.querySelector("#refresh");
+    const status = document.querySelector("#status");
+
+    let running = false;
+    let pending = true;
+
+    function send(action, parameters = {}) {
+        window.external.sendMessage(JSON.stringify({ action, ...parameters }));
+    }
+
+    function updateControls() {
+        input.disabled = output.disabled = refresh.disabled = running || pending;
+        toggle.disabled = pending || (!running && (!input.value || !output.value));
+        toggle.textContent = running ? "Stop" : "Start";
+        status.dataset.running = running;
+    }
+
+    function fillPicker(picker, devices, label, id) {
+        const placeholder = new Option(label, "");
+        placeholder.disabled = true;
+        picker.replaceChildren(placeholder);
+        for (const device of devices) {
+            picker.add(new Option(device.name, device.id));
+        }
+        picker.value = id ?? "";
+    }
+
+    function request(action) {
+        pending = true;
+        updateControls();
+        send(action, { input: input.value, output: output.value });
+    }
+
+    window.external.receiveMessage(message => {
+        const state = JSON.parse(message);
+        if (state.inputs && state.outputs) {
+            fillPicker(input, state.inputs, "Select an input", state.inputId);
+            fillPicker(output, state.outputs, "Select an output", state.outputId);
+        }
+        status.textContent = state.status;
+        running = state.running;
+        pending = false;
+        volume.disabled = false;
+        updateControls();
+    });
+
+    input.addEventListener("change", updateControls);
+    output.addEventListener("change", updateControls);
+    toggle.addEventListener("click", () => request(running ? "stop" : "start"));
+    refresh.addEventListener("click", () => request("refresh"));
+    volume.addEventListener("input", () => {
+        level.textContent = volume.value + "%";
+        send("volume", { volume: volume.valueAsNumber });
+    });
+
+    setInterval(() => {
+        if (running && !pending) {
+            send("poll");
+        }
+    }, 500);
+
+    request("refresh");
+</script>
+</body>
+</html>

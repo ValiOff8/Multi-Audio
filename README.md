@@ -10,12 +10,12 @@ Multi-Audio plays a Windows Line In through the same output as your PC audio. Wi
 
 If Line In is missing, plug in the cable and click **Refresh devices**. If it still does not appear, run `mmsys.cpl`, open the **Recording** tab, and check whether Line In is disabled.
 
-The executable targets 64-bit Windows and uses the .NET 10 Desktop Runtime.
+The single-file executable targets 64-bit Windows and includes the .NET runtime. The Photino interface uses the Microsoft Edge WebView2 Runtime installed on Windows.
 
 ## Build
 
 Run this command from the directory containing `MultiAudio.csproj` with the .NET 10 SDK.
 
 ```powershell
-dotnet publish -c Release -r win-x64 --no-self-contained -p:PublishSingleFile=true -p:DebugType=None
+dotnet publish -c Release -r win-x64 --self-contained -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:EnableCompressionInSingleFile=true -p:DebugType=None -o dist/photino
 ```
