@@ -1,16 +1,19 @@
 # Multi-Audio
 
-Multi-Audio plays a Windows Line In through the same output as your PC audio. Windows mixes both audio streams. The app keeps the input audio in memory and plays it locally.
+Multi-Audio is a Windows desktop app that plays an external audio source alongside your PC audio. Connect a game console, mixer, or another device to a line input and hear both through the same headphones or speakers. Audio stays on your device.
+
+<img src="docs/screenshots/setup.png" alt="Multi-Audio ready with a line input and headphones selected" width="400">
+<img src="docs/screenshots/monitoring.png" alt="Multi-Audio playing audio from the selected line input" width="400">
 
 ## Run on Windows
 
-1. Keep your headphones plugged into the front jack. Connect the other device's audio output to the blue Line In jack on the rear of the PC.
-2. In Windows sound settings, select your front headphones as the output.
-3. Open `MultiAudio.exe`, confirm that **Input** is **Line In** and **Output** is the same headphone device, and click **Start**. The **Line-in volume** slider adjusts the incoming audio.
+1. Connect the external device's audio output to a line input on your PC or audio interface.
+2. Open `MultiAudio.exe`. Select the line input and the playback device you use for Windows audio.
+3. Click **Start** and adjust **Line-in volume** to balance the two sources.
 
-If Line In is missing, plug in the cable and click **Refresh devices**. If it still does not appear, run `mmsys.cpl`, open the **Recording** tab, and check whether Line In is disabled.
+If the input is missing, click **Refresh devices** and check that it is enabled in Windows sound settings.
 
-The single-file executable targets 64-bit Windows and includes the .NET runtime. The Photino interface uses the Microsoft Edge WebView2 Runtime installed on Windows.
+The single-file build targets 64-bit Windows and includes the .NET runtime. The Photino interface requires Microsoft Edge WebView2 Runtime.
 
 ## Build
 

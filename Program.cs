@@ -10,6 +10,14 @@ internal static class Program
         using Stream frontend = typeof(Program).Assembly.GetManifestResourceStream("MultiAudio.Frontend")
             ?? throw new InvalidOperationException("The embedded frontend is missing.");
         using StreamReader reader = new(frontend);
+        using Stream icon = typeof(Program).Assembly.GetManifestResourceStream("MultiAudio.Icon")
+            ?? throw new InvalidOperationException("The embedded icon is missing.");
+        using MemoryStream iconData = new();
+        icon.CopyTo(iconData);
+        string html = reader.ReadToEnd().Replace(
+            "{{APP_ICON_BASE64}}",
+            Convert.ToBase64String(iconData.ToArray()),
+            StringComparison.Ordinal);
 
         PhotinoWindow window = new PhotinoWindow()
             .SetTitle("Multi-Audio")
@@ -23,7 +31,7 @@ internal static class Program
 
         using AudioWindow audio = new(window);
         window.RegisterWebMessageReceivedHandler(audio.OnMessage);
-        window.LoadRawString(reader.ReadToEnd());
+        window.LoadRawString(html);
         window.WaitForClose();
     }
 }

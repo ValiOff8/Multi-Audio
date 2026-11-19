@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data:; style-src 'unsafe-inline'; script-src 'unsafe-inline'; base-uri 'none'; form-action 'none'">
 <title>Multi-Audio</title>
 <style>
     :root {
@@ -16,7 +16,8 @@
     *, *::before, *::after { box-sizing: border-box; }
     body { margin: 0; }
     main { max-width: 34rem; margin: auto; padding: 1.25rem 1.5rem; }
-    h1 { margin: 0 0 0.9rem; font-size: 1.55rem; letter-spacing: -0.035em; }
+    header { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 0.9rem; }
+    h1 { margin: 0; font-size: 1.55rem; letter-spacing: -0.035em; }
     .controls {
         display: grid;
         gap: 0.7rem;
@@ -57,7 +58,10 @@
 </head>
 <body>
 <main>
-    <h1>Multi-Audio</h1>
+    <header>
+        <h1>Multi-Audio</h1>
+        <img src="data:image/png;base64,{{APP_ICON_BASE64}}" width="40" height="40" alt="">
+    </header>
     <section class="controls" aria-label="Audio controls">
         <div class="field">
             <label for="input">Input</label>

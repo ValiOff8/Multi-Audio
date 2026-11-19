@@ -5,11 +5,13 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <Product>Multi-Audio</Product>
+    <ApplicationIcon>Assets/MultiAudio.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="NAudio.Wasapi" Version="2.2.1" />
     <PackageReference Include="Photino.NET" Version="4.0.16" />
     <EmbeddedResource Include="Frontend/index.html" LogicalName="MultiAudio.Frontend" />
+    <EmbeddedResource Include="Assets/MultiAudio.png" LogicalName="MultiAudio.Icon" />
     <EmbeddedResource Include="THIRD-PARTY-NOTICES.txt" />
   </ItemGroup>
   <Target Name="EmbedRuntimeNotices" BeforeTargets="AssignTargetPaths" DependsOnTargets="ResolveFrameworkReferences" Condition="'$(SelfContained)' == 'true'">
